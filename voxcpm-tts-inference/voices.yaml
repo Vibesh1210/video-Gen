@@ -1,0 +1,39 @@
+# VoxCPM voice catalog.
+#
+# Each entry becomes a voice_id visible at GET /v1/voices and usable in
+# POST /v1/audio/speech. Two modes:
+#
+#   mode: clone   -> uses reference_wav (+ optional prompt_text for
+#                    "ultimate cloning" — the reference transcript).
+#   mode: design  -> prepends design_prompt as "(description)text" so VoxCPM
+#                    synthesises a brand-new voice matching the description.
+#
+# Add more voices by dropping a .wav into ./voices/ and adding an entry below.
+
+- voice_id: default
+  name: "Default (VoxCPM reference speaker)"
+  language_code: en
+  gender: female
+  mode: clone
+  reference_wav: voices/reference_speaker.wav
+
+- voice_id: en_female_warm
+  name: "English — warm female (voice design)"
+  language_code: en
+  gender: female
+  mode: design
+  design_prompt: "A young woman with a gentle, warm, and friendly voice"
+
+- voice_id: en_male_news
+  name: "English — news anchor (voice design)"
+  language_code: en
+  gender: male
+  mode: design
+  design_prompt: "A middle-aged male news anchor, clear and authoritative"
+
+- voice_id: hi_female_narrator
+  name: "Hindi — female narrator (voice design)"
+  language_code: hi
+  gender: female
+  mode: design
+  design_prompt: "A warm Hindi female narrator with calm, measured pacing"

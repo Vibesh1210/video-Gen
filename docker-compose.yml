@@ -1,0 +1,134 @@
+# Full-stack local deploy.
+#
+# Usage:
+#   # first-time: build images
+#   docker compose build
+#
+#   # run (GPU required for tts + musetalk-api)
+#   docker compose up
+#
+#   # run with mocks only (no GPUs):
+#   TTS_ADAPTER=mock LIPSYNC_ADAPTER=mock docker compose up orchestrator frontend
+#
+# Notes on GPU:
+#   - tts uses kenpath/svara-tts-v1 via vLLM (GPU required).
+#   - musetalk-api uses MuseTalk v1.5 (GPU required; CUDA 12.x).
+#   - With mock adapters the orchestrator can run stand-alone.
+#
+# Model weights:
+#   - svara pulls from HF on first start (HF_TOKEN optional).
+#   - musetalk expects MuseTalk/models/ populated on the host; mount it in.
+
+services:
+
+  # Svara TTS — legacy. Start with `docker compose up tts ...` if you want
+  # to A/B against VoxCPM. Only one TTS service should bind 8080 at a time.
+  tts:
+    build:
+      context: ./svara-tts-inference
+    image: svara-tts-api:latest
+    container_name: lipsync-tts
+    restart: unless-stopped
+    profiles: ["svara"]
+    ports: [ "8080:8080" ]
+    environment:
+      - API_PORT=8080
+      - API_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # VoxCPM TTS — default. Provides the same /v1/audio/speech + /v1/voices
+  # contract as Svara, so the orchestrator swaps via TTS_URL only.
+  voxcpm-tts:
+    build:
+      context: ./voxcpm-tts-inference
+    image: voxcpm-tts-api:latest
+    container_name: lipsync-voxcpm
+    restart: unless-stopped
+    ports: [ "8080:8080" ]
+    environment:
+      - API_PORT=8080
+      - API_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
+      - VOXCPM_MODEL_PATH=/models/VoxCPM2
+      - VOXCPM_DEVICE=cuda
+    volumes:
+      # Weights live on /DATA (home is full). Override VOXCPM_WEIGHTS_HOST
+      # in .env if yours are elsewhere.
+      - ${VOXCPM_WEIGHTS_HOST:-/DATA/USERS/vibesh/models/VoxCPM2}:/models/VoxCPM2:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  musetalk-api:
+    build:
+      context: .
+      dockerfile: musetalk-api/Dockerfile
+    image: musetalk-api:latest
+    container_name: lipsync-musetalk
+    restart: unless-stopped
+    ports: [ "8081:8081" ]
+    environment:
+      - MUSETALK_VERSION=v15
+      - MUSETALK_USE_FLOAT16=1
+      - LOG_LEVEL=INFO
+    # Mount the host's pre-downloaded MuseTalk models so we don't have to
+    # re-pull them inside the image.
+    volumes:
+      - ./MuseTalk/models:/app/MuseTalk/models:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  orchestrator:
+    build:
+      context: ./orchestrator
+    image: lipsync-orchestrator:latest
+    container_name: lipsync-orchestrator
+    restart: unless-stopped
+    ports: [ "8000:8000" ]
+    depends_on:
+      - musetalk-api
+    environment:
+      # Default points to VoxCPM. Override with TTS_URL=http://tts:8080 to
+      # hit the legacy Svara service (run with `--profile svara`).
+      - TTS_URL=${TTS_URL:-http://voxcpm-tts:8080}
+      - MUSETALK_URL=http://musetalk-api:8081
+      - TTS_ADAPTER=${TTS_ADAPTER:-svara}
+      - LIPSYNC_ADAPTER=${LIPSYNC_ADAPTER:-musetalk}
+      - MAX_CONCURRENT_JOBS=${MAX_CONCURRENT_JOBS:-1}
+      - LOG_LEVEL=INFO
+    volumes:
+      - orchestrator-data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+    image: lipsync-frontend:latest
+    container_name: lipsync-frontend
+    restart: unless-stopped
+    ports: [ "3000:3000" ]
+    depends_on:
+      - orchestrator
+    environment:
+      - ORCHESTRATOR_URL=http://orchestrator:8000
+
+volumes:
+  hf-cache:
+  orchestrator-data:

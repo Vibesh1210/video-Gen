@@ -1,0 +1,175 @@
+# ============================================================
+# Model weights & checkpoints (do NOT push to git)
+# ============================================================
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+*.onnx
+*.gguf
+*.h5
+*.pb
+*.tflite
+*.msgpack
+*.npz
+*.npy
+*.model
+*.weights
+*.pkl
+*.pickle
+
+# Known model directories (MuseTalk)
+MuseTalk/models/
+MuseTalk/models/**
+MuseTalk/results/
+MuseTalk/data/
+MuseTalk/.pyshim/
+
+# VoxCPM model artifacts / downloaded checkpoints
+VoxCPM/pretrained_models/
+VoxCPM/checkpoints/
+VoxCPM/outputs/
+VoxCPM/runs/
+
+# Inference service model caches
+voxcpm-tts-inference/models/
+voxcpm-tts-inference/checkpoints/
+voxcpm-tts-inference/cache/
+svara-tts-inference/models/
+svara-tts-inference/checkpoints/
+svara-tts-inference/cache/
+musetalk-api/models/
+musetalk-api/cache/
+
+# HuggingFace / Torch hub caches if vendored into repo
+**/.cache/
+**/hf_cache/
+**/huggingface/
+**/torch_hub/
+**/transformers_cache/
+
+# Orchestrator generated data
+orchestrator/data/storage/
+orchestrator/data/uploads/
+orchestrator/data/outputs/
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+MANIFEST
+.installed.cfg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ============================================================
+# Node / frontend
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.next/
+.nuxt/
+.svelte-kit/
+.turbo/
+.parcel-cache/
+dist/
+build/
+out/
+.vite/
+
+# ============================================================
+# Media / generated outputs
+# ============================================================
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.flac
+*.ogg
+!assets/**
+!examples/**
+!**/sample*.wav
+!**/sample*.mp4
+
+# ============================================================
+# OS / editor
+# ============================================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# ============================================================
+# Logs & tmp
+# ============================================================
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# ============================================================
+# Claude local settings
+# ============================================================
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
