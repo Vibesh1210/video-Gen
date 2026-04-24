@@ -17,7 +17,7 @@ set -euo pipefail
 ROOT="/home/vibesh/museTalk"
 CONDA_SH="/home/vibesh/miniconda3/etc/profile.d/conda.sh"
 
-SVARA_PORT=8080
+SVARA_PORT=8090
 MUSETALK_PORT=8081
 ORCHESTRATOR_PORT=8000
 FRONTEND_PORT=3000

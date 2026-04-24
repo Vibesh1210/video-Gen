@@ -29,6 +29,16 @@ from omegaconf import OmegaConf
 from tqdm import tqdm
 from transformers import WhisperModel
 
+# PyTorch 2.6+ flipped `torch.load`'s default to weights_only=True. MuseTalk's
+# DWPose / SD-VAE / MuseTalk UNet checkpoints predate that and include numpy
+# pickled globals that the safe unpickler rejects. These checkpoints come from
+# trusted upstream repos; restore the pre-2.6 default here.
+_orig_torch_load = torch.load
+def _torch_load_full(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _orig_torch_load(*args, **kwargs)
+torch.load = _torch_load_full
+
 
 # --------------------------------------------------------------------------- #
 # Sys-path + cwd bootstrap                                                    #
@@ -386,7 +396,7 @@ class MuseTalkEngine:
                 "-f", "image2",
                 "-i", str(res_dir / "%08d.png"),
                 "-vcodec", "libx264",
-                "-vf", "format=yuv420p",
+                "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2,format=yuv420p",
                 "-crf", "18",
                 str(silent_mp4),
             ],
