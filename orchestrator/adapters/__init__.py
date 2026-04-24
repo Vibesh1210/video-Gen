@@ -20,11 +20,13 @@ from .lipsync_mock import MockLipSyncAdapter
 from .lipsync_musetalk import MuseTalkLipSyncAdapter
 from .tts_mock import MockTTSAdapter
 from .tts_svara import SvaraTTSAdapter
+from .tts_voxcpm import VoxCPMTTSAdapter
 
 
 TTS_ADAPTERS: dict[str, Callable[[Config], TTSAdapter]] = {
-    "svara": lambda cfg: SvaraTTSAdapter(cfg.tts_url, timeout=cfg.tts_timeout),
-    "mock":  lambda cfg: MockTTSAdapter(),
+    "voxcpm": lambda cfg: VoxCPMTTSAdapter(cfg.tts_url, timeout=cfg.tts_timeout),
+    "svara":  lambda cfg: SvaraTTSAdapter(cfg.tts_url, timeout=cfg.tts_timeout),
+    "mock":   lambda cfg: MockTTSAdapter(),
 }
 
 LIPSYNC_ADAPTERS: dict[str, Callable[[Config], LipSyncAdapter]] = {

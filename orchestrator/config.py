@@ -32,7 +32,7 @@ class Config:
     musetalk_url: str = field(default_factory=lambda: os.getenv("MUSETALK_URL", "http://localhost:8081"))
 
     # Active adapter names — must match keys in adapters/__init__.py registries.
-    tts_adapter: str = field(default_factory=lambda: os.getenv("TTS_ADAPTER", "svara"))
+    tts_adapter: str = field(default_factory=lambda: os.getenv("TTS_ADAPTER", "voxcpm"))
     lipsync_adapter: str = field(default_factory=lambda: os.getenv("LIPSYNC_ADAPTER", "musetalk"))
 
     # Voice used when the client omits `voice` on POST /api/v1/jobs. If unset,

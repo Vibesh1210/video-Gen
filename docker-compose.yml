@@ -110,7 +110,7 @@ services:
       # hit the legacy Svara service (run with `--profile svara`).
       - TTS_URL=${TTS_URL:-http://voxcpm-tts:8080}
       - MUSETALK_URL=http://musetalk-api:8081
-      - TTS_ADAPTER=${TTS_ADAPTER:-svara}
+      - TTS_ADAPTER=${TTS_ADAPTER:-voxcpm}
       - LIPSYNC_ADAPTER=${LIPSYNC_ADAPTER:-musetalk}
       - MAX_CONCURRENT_JOBS=${MAX_CONCURRENT_JOBS:-1}
       - LOG_LEVEL=INFO

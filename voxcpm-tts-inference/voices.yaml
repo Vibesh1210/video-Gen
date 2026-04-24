@@ -11,29 +11,31 @@
 # Add more voices by dropping a .wav into ./voices/ and adding an entry below.
 
 - voice_id: default
-  name: "Default (VoxCPM reference speaker)"
-  language_code: en
+  name: "Default (Indian Hindi Male)"
+  language_code: hi
+  gender: Male
+  mode: clone
+  reference_wav: voices/indian_male.wav
+  design_prompt: "A middle-aged Indian assitant of bank with a clear and friendly voice"
+
+- voice_id: hi_female_warm
+  name: "Hindi — warm female (voice design)"
+  language_code: hi
   gender: female
   mode: clone
-  reference_wav: voices/reference_speaker.wav
-
-- voice_id: en_female_warm
-  name: "English — warm female (voice design)"
-  language_code: en
-  gender: female
-  mode: design
-  design_prompt: "A young woman with a gentle, warm, and friendly voice"
+  reference_wav: voices/indian_female.wav
+  design_prompt: "A young Indian woman with a gentle, warm, and friendly voice"
 
 - voice_id: en_male_news
   name: "English — news anchor (voice design)"
   language_code: en
   gender: male
   mode: design
-  design_prompt: "A middle-aged male news anchor, clear and authoritative"
+  design_prompt: "A middle-aged Indian male news anchor, clear and authoritative"
 
-- voice_id: hi_female_narrator
-  name: "Hindi — female narrator (voice design)"
-  language_code: hi
+- voice_id: en_female_narrator
+  name: "English — female narrator (voice design)"
+  language_code: en
   gender: female
   mode: design
-  design_prompt: "A warm Hindi female narrator with calm, measured pacing"
+  design_prompt: "A warm english female narrator with calm, measured pacing"

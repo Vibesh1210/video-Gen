@@ -6,6 +6,7 @@ threading lock because VoxCPM is not thread-safe for concurrent GPU use.
 from __future__ import annotations
 
 import logging
+import os
 import threading
 from typing import TYPE_CHECKING
 
@@ -25,12 +26,25 @@ class VoxCPMEngine:
     ):
         from voxcpm import VoxCPM  # lazy import so unit tests don't need it
 
-        logger.info("Loading VoxCPM from %s (device=%s, denoiser=%s)",
-                    model_path, device, load_denoiser)
+        # Installed voxcpm has no `device` kwarg — it picks CUDA when
+        # available. Use CUDA_VISIBLE_DEVICES (or VOXCPM_DEVICE=cpu →
+        # CUDA_VISIBLE_DEVICES="") to steer it.
+        if device and device.lower() == "cpu":
+            os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+        # `optimize=True` triggers torch.compile + CUDA graphs, which use
+        # thread-local state. Warmup runs on the main thread but synth runs
+        # on an asyncio worker thread, hitting an inductor TLS assertion.
+        # Default OFF; opt back in via VOXCPM_OPTIMIZE=1 if you pin synth
+        # to the load thread.
+        optimize = os.environ.get("VOXCPM_OPTIMIZE", "0") == "1"
+
+        logger.info("Loading VoxCPM from %s (device=%s, denoiser=%s, optimize=%s)",
+                    model_path, device, load_denoiser, optimize)
         self._model = VoxCPM.from_pretrained(
             hf_model_id=model_path,
             load_denoiser=load_denoiser,
-            device=device,
+            optimize=optimize,
         )
         self._sr = int(self._model.tts_model.sample_rate)
         self._lock = threading.Lock()
