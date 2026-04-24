@@ -18,6 +18,7 @@
 *.weights
 *.pkl
 *.pickle
+*.db
 
 # Known model directories (MuseTalk)
 MuseTalk/models/
